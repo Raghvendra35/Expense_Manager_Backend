@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.expense.dto.ExpenseDTO;
 import com.expense.entity.ExpenseEntity;
+import com.expense.exceptions.ResourceNotFoundException;
 import com.expense.repository.ExpenseRepository;
 import com.expense.service.ExpenseService;
 
@@ -51,6 +52,24 @@ public class ExpenseServiceImpl implements ExpenseService
 	private ExpenseDTO mapToExpenseDTO(ExpenseEntity expenseEntity)
 	{
 		return modelMapper.map(expenseEntity,ExpenseDTO.class);
+	}
+
+	
+	
+	/**
+	 *It will fetch the single expense details from database
+	 *@param expenseId
+	 * @return ExpenseDTO
+	 */
+	@Override
+	public ExpenseDTO getExpenseById(String expenseId)
+	{ 
+		//If data not found then it gives InternalServerError 500 so here we use orElseThrow Runtime Exception with the help of lambda expression
+        ExpenseEntity expenseEntity=expenseRepository.findByExpenseId(expenseId)
+//        		      .orElseThrow(()-> new RuntimeException("Expense not found for the ExpenseId"+  expenseId)); // this exception will throw on console not on postman/browser it throw InternalServerError 500 postman/Browser
+        	          .orElseThrow(()-> new ResourceNotFoundException("Expense not found for the ExpenseId : "+  expenseId));//So Create Custom Exception to throw the Exception on browser
+        log.info("Printing the expense entity details {} ", expenseEntity);
+        return mapToExpenseDTO(expenseEntity);
 	}
 }
 

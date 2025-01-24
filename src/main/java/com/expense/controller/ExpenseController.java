@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.expense.dto.ExpenseDTO;
@@ -45,6 +46,7 @@ public class ExpenseController
 		return response;
 	}
 
+	
 	/**
 	 * Mapper method for converting expense DTO object to expense response
 	 * @param expenseDTO
@@ -54,6 +56,23 @@ public class ExpenseController
 	{
         return modelMapper.map(expenseDTO, ExpenseResponse.class);
 	}
+	
+	
+	
+	/**
+	 * It will fetch the single expense from database
+	 * @param expenseId
+	 * @return expenseResponse
+	 * **/
+	@GetMapping("/expenses/{expenseId}")
+	public ExpenseResponse geyExpenseById(@PathVariable String expenseId)
+	{
+		log.info("API GET /expenses/{} called ",expenseId);
+		ExpenseDTO expenseDTO=expenseService.getExpenseById(expenseId);
+		log.info("printing the expense details {}", expenseDTO);
+		return mapToExpenseResponse(expenseDTO);
+	}
+	
 }
 
 

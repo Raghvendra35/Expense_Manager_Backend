@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.expense.dto.ExpenseDTO;
@@ -71,6 +74,19 @@ public class ExpenseController
 		ExpenseDTO expenseDTO=expenseService.getExpenseById(expenseId);
 		log.info("printing the expense details {}", expenseDTO);
 		return mapToExpenseResponse(expenseDTO);
+	}
+	 
+	/**
+	 * It will the delete expense from database
+	 * @param expenseId
+	 * @return void
+	 * **/
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@DeleteMapping("/expenses/{expenseId}")
+	public void deleteExcepenseId(@PathVariable String expenseId)
+	{ 
+		log.info("API DELETE /expenses/{} called ", expenseId);
+		expenseService.deleteExpenseByExcpenseId(expenseId);
 	}
 	
 }

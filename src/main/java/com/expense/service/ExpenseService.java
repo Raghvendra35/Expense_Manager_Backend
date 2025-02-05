@@ -30,4 +30,6 @@ public interface ExpenseService {
 	 */
 	public void deleteExpenseByExcpenseId(String excpenseId);
 	
+	public ExpenseDTO saveExpenseDetails(ExpenseDTO expenseDTO);
+	
 }

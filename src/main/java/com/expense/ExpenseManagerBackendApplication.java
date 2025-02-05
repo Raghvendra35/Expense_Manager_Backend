@@ -10,6 +10,7 @@ public class ExpenseManagerBackendApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ExpenseManagerBackendApplication.class, args);
+		System.out.println("Running...");
 	}
 	
 	//ModelMapper

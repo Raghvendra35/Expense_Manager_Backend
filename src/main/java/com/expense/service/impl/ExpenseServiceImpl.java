@@ -1,6 +1,7 @@
 package com.expense.service.impl;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -85,6 +86,42 @@ public class ExpenseServiceImpl implements ExpenseService
 		ExpenseEntity expenseEntity=expenseRepository.findByExpenseId(excpenseId)
 				                   .orElseThrow(()-> new ResourceNotFoundException("Resource not found"));
 		expenseRepository.delete(expenseEntity);
+	}
+
+	
+	/**
+	 * It will save the expense details to database
+	 * @param expenseDTO
+	 * @return expenseDTO
+	 * **/
+	@Override
+	public ExpenseDTO saveExpenseDetails(ExpenseDTO expenseDTO) 
+	{
+		ExpenseEntity newExpenseEntity=mapToExpenseEntity(expenseDTO);
+		//newExpenseEntity.setExpenseId(UUID.randomUUID().toString());
+		System.out.println("New Expense Entity .....");
+		System.out.println(newExpenseEntity);
+		try {
+		newExpenseEntity= expenseRepository.save(newExpenseEntity);
+		}catch(Exception e)
+		{
+			e.printStackTrace();
+			
+		}
+		log.info("Printing the new expense entity details {}"+ newExpenseEntity);
+
+		return mapToExpenseDTO(newExpenseEntity);
+	}
+
+	
+	/**
+	 * Mapper method for converting expense DTO object to expense response
+	 * @param expenseDTO
+	 * @return ExpenseEntity
+	 */
+	private ExpenseEntity mapToExpenseEntity(ExpenseDTO expenseDTO)
+	{
+		return modelMapper.map(expenseDTO, ExpenseEntity.class);
 	}
 }
 

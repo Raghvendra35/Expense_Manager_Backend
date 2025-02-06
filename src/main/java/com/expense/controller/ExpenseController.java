@@ -9,13 +9,17 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.expense.dto.ExpenseDTO;
+import com.expense.io.ExpenseRequest;
 import com.expense.io.ExpenseResponse;
 import com.expense.service.ExpenseService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -89,6 +93,32 @@ public class ExpenseController
 		expenseService.deleteExpenseByExcpenseId(expenseId);
 	}
 	
+	/**
+	 * It will save the expense details to database
+	 * @param expenseRequest
+	 * @return expenseResponse
+	 * **/
+	@ResponseStatus(HttpStatus.CREATED)
+	@PostMapping("expenses")
+	public ExpenseResponse saveExpenseDetails(@Valid @RequestBody ExpenseRequest expenseRequest)
+	{
+		log.info("API POST /expenses called {} ", expenseRequest);
+        ExpenseDTO expenseDTO= mapToExpenseDTO(expenseRequest);
+        
+        ExpenseDTO dto=expenseService.saveExpenseDetails(expenseDTO);
+        return mapToExpenseResponse(expenseDTO);
+	}
+
+
+	/**
+	 * Mapper method for converting expenseRequest object to expenseDTO
+	 * @param expenseRequest
+	 * @return ExpenseDTO
+	 */
+	private ExpenseDTO mapToExpenseDTO(@Valid ExpenseRequest expenseRequest) 
+	{
+		   return modelMapper.map(expenseRequest,ExpenseDTO.class);
+	}
 }
 
 

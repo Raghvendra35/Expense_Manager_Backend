@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,16 +55,7 @@ public class ExpenseController
 	}
 
 	
-	/**
-	 * Mapper method for converting expense DTO object to expense response
-	 * @param expenseDTO
-	 * @return ExpenseResponse
-	 */
-	private ExpenseResponse mapToExpenseResponse(ExpenseDTO expenseDTO) 
-	{
-        return modelMapper.map(expenseDTO, ExpenseResponse.class);
-	}
-	
+
 	
 	
 	/**
@@ -104,12 +96,35 @@ public class ExpenseController
 	{
 		log.info("API POST /expenses called {} ", expenseRequest);
         ExpenseDTO expenseDTO= mapToExpenseDTO(expenseRequest);
-        
-        ExpenseDTO dto=expenseService.saveExpenseDetails(expenseDTO);
+        expenseDTO=expenseService.saveExpenseDetails(expenseDTO);
+		log.info("Printing the expense DTO {}", expenseDTO);
         return mapToExpenseResponse(expenseDTO);
 	}
 
 
+		
+	
+	@PutMapping("/expense/{expenseId}")
+	public ExpenseResponse updateExpenseDetails(@RequestBody ExpenseRequest updaterequest,@PathVariable String expenseId)
+	{
+		log.info("API PUT /expense/{} request body {}", expenseId, updaterequest);
+		ExpenseDTO updatedExpenseDTO=mapToExpenseDTO(updaterequest);
+		updatedExpenseDTO=expenseService.updateExpenseDetails(updatedExpenseDTO, expenseId);
+		log.info("Printing the updated expense dto details {}", updatedExpenseDTO);
+
+		return mapToExpenseResponse(updatedExpenseDTO);
+	}
+	
+	/**
+	 * Mapper method for converting expense DTO object to expense response
+	 * @param expenseDTO
+	 * @return ExpenseResponse
+	 */
+	private ExpenseResponse mapToExpenseResponse(ExpenseDTO expenseDTO) 
+	{
+        return modelMapper.map(expenseDTO, ExpenseResponse.class);
+	}
+	
 	/**
 	 * Mapper method for converting expenseRequest object to expenseDTO
 	 * @param expenseRequest

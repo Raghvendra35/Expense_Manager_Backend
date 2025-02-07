@@ -2,6 +2,7 @@ package com.expense.io;
 
 import java.math.BigDecimal;
 import java.security.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import lombok.AllArgsConstructor;
@@ -21,6 +22,6 @@ public class ExpenseResponse {
 	private String category;
 	private Date date;
 	private BigDecimal amount;
-	private Timestamp createdAt;
-	private Timestamp updatedAt;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
 }

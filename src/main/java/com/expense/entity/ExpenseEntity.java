@@ -2,6 +2,7 @@ package com.expense.entity;
 
 import java.math.BigDecimal;
 import java.security.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -17,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 
 @Entity
 @Table(name ="tbl_expenses")
@@ -41,10 +43,11 @@ public class ExpenseEntity {
 	
 	@CreationTimestamp
 	@Column(nullable=false, updatable=false)
-	private Timestamp createdAt;
+	private LocalDateTime createdAt;
 	
 	@UpdateTimestamp
-	private Timestamp updatedAt;
+	private LocalDateTime updatedAt;
+	
 	
 	
 	

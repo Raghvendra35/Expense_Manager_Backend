@@ -32,4 +32,7 @@ public interface ExpenseService {
 	
 	public ExpenseDTO saveExpenseDetails(ExpenseDTO expenseDTO);
 	
+	public ExpenseDTO updateExpenseDetails(ExpenseDTO expenseDTO,String expenseId);
+	
+	
 }

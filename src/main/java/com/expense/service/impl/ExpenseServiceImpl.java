@@ -98,22 +98,37 @@ public class ExpenseServiceImpl implements ExpenseService
 	public ExpenseDTO saveExpenseDetails(ExpenseDTO expenseDTO) 
 	{
 		ExpenseEntity newExpenseEntity=mapToExpenseEntity(expenseDTO);
-		//newExpenseEntity.setExpenseId(UUID.randomUUID().toString());
-		System.out.println("New Expense Entity .....");
-		System.out.println(newExpenseEntity);
-		try {
+		newExpenseEntity.setExpenseId(UUID.randomUUID().toString());
 		newExpenseEntity= expenseRepository.save(newExpenseEntity);
-		}catch(Exception e)
-		{
-			e.printStackTrace();
-			
-		}
 		log.info("Printing the new expense entity details {}"+ newExpenseEntity);
-
 		return mapToExpenseDTO(newExpenseEntity);
 	}
 
 	
+	
+
+	@Override
+	public ExpenseDTO updateExpenseDetails(ExpenseDTO expenseDTO, String expenseId) 
+	{
+        ExpenseEntity existingExpense=getExpenseEntity(expenseId);
+        ExpenseEntity updatedExpenseEntity=mapToExpenseEntity(expenseDTO);
+        updatedExpenseEntity.setId(existingExpense.getId());
+        updatedExpenseEntity.setExpenseId(existingExpense.getExpenseId());
+        updatedExpenseEntity.setCreatedAt(existingExpense.getCreatedAt());
+        updatedExpenseEntity.setUpdatedAt(existingExpense.getUpdatedAt());
+		log.info("Printing the updated expense entity details {}", updatedExpenseEntity);
+        updatedExpenseEntity=expenseRepository.save(updatedExpenseEntity);
+        
+		return mapToExpenseDTO(updatedExpenseEntity);
+	}
+	
+	
+	
+	private ExpenseEntity getExpenseEntity(String expenseId) {
+
+		return expenseRepository.findByExpenseId(expenseId).orElseThrow(() -> new ResourceNotFoundException("Expense not found for the expense id "+ expenseId));
+	}
+
 	/**
 	 * Mapper method for converting expense DTO object to expense response
 	 * @param expenseDTO
@@ -123,6 +138,7 @@ public class ExpenseServiceImpl implements ExpenseService
 	{
 		return modelMapper.map(expenseDTO, ExpenseEntity.class);
 	}
+
 }
 
 

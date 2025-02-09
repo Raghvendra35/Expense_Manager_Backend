@@ -10,6 +10,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.expense.service.impl.CustomUserDetailsService;
+import com.expense.service.impl.TokenBlackListService;
 import com.expense.util.JwtTokenUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -26,6 +27,9 @@ public class JwtRequestFilter extends OncePerRequestFilter
 	private JwtTokenUtil jwtTokenUtil;
 	@Autowired
 	private CustomUserDetailsService userDetailsService;
+	@Autowired
+	private TokenBlackListService tokenBlackListService;
+
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -38,6 +42,15 @@ public class JwtRequestFilter extends OncePerRequestFilter
    	   if(requestTokenHeader != null && requestTokenHeader.startsWith("Bearer")) {
    		   
    		   jwtToken = requestTokenHeader.substring(7);
+   		   
+   		   //check token blacklist or not. if blacklist that mean signout
+   		   if(jwtToken !=null && tokenBlackListService.isTokenBlacklisted(jwtToken))
+   		   {
+//   			   response.sendError(HttpServletRequest.SC_UNAUTHORIZED);
+   			       response.sendError(401);
+   			       return; 
+   		   }
+   		   
    		   try {
    		   email = jwtTokenUtil.getUsernameFromToken(jwtToken);
    		   }catch(IllegalArgumentException e)

@@ -19,8 +19,10 @@ import com.expense.io.ProfileRequest;
 import com.expense.io.ProfileResponse;
 import com.expense.service.ProfileService;
 import com.expense.service.impl.CustomUserDetailsService;
+import com.expense.service.impl.TokenBlackListService;
 import com.expense.util.JwtTokenUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,8 @@ public class AuthController {
 	private final AuthenticationManager authenticationManager;
 	private final JwtTokenUtil jwtTokenUtil;
 	private final CustomUserDetailsService customUserDetailsService;
+	
+	private final TokenBlackListService tokenBlackListService;
 	
 	/**
 	 * API endpoint to register new user
@@ -79,6 +83,27 @@ public class AuthController {
         }catch(BadCredentialsException ex) {
         	throw new Exception("Bad Credentials..");
         }
+	}
+
+    
+    
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PostMapping("/signout")
+    public void signout(HttpServletRequest request) {
+    	String jwttoken=extractTokenFromRequest(request);
+    	if(jwttoken != null) {
+    		tokenBlackListService.addTokenToBlackList(jwttoken);
+    	  }
+       }
+       
+    private String extractTokenFromRequest(HttpServletRequest request) {
+                           
+    	String beararToken=request.getHeader("Authorization");
+    	if(beararToken != null && beararToken.startsWith("Bearar "))
+    	{
+    		return beararToken.substring(7);
+    	}
+    	return null;
 	}
 
 

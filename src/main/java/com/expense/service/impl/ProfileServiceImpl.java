@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.expense.dto.ProfileDTO;
 import com.expense.entity.ProfileEntity;
+import com.expense.exceptions.ItemExistsException;
 import com.expense.repository.ProfileRepository;
 import com.expense.service.ProfileService;
 
@@ -34,6 +35,13 @@ public class ProfileServiceImpl implements ProfileService {
 	 * **/
 	@Override
 	public ProfileDTO createProfile(ProfileDTO profileDTO) {
+		
+		//Check Email Exists or not
+		if(profileRepository.existsByEmail(profileDTO.getEmail()))
+		{
+			throw new ItemExistsException("Profile alreadt exists "+ profileDTO.getEmail());
+		}
+		
 		
 		//Encrypter Password
 		profileDTO.setPassword(encoder.encode(profileDTO.getPassword()));
@@ -62,5 +70,8 @@ public class ProfileServiceImpl implements ProfileService {
 	private ProfileEntity mapToProfileEntity(ProfileDTO profileDTO) {
 		return modelMapper.map(profileDTO, ProfileEntity.class);
 	}
+
+	
+	
 
 }

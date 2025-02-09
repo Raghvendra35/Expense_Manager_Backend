@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin("*")
+//@CrossOrigin("*")   comment this we are using class level
 public class ExpenseController 
 {
 

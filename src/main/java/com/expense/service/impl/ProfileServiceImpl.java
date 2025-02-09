@@ -3,6 +3,7 @@ package com.expense.service.impl;
 import java.util.UUID;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.expense.dto.ProfileDTO;
@@ -17,8 +18,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
+	
+	
 	private final ProfileRepository profileRepository;
 	private final ModelMapper modelMapper;
+	private final PasswordEncoder encoder;
 
 	
 	
@@ -30,6 +34,10 @@ public class ProfileServiceImpl implements ProfileService {
 	 * **/
 	@Override
 	public ProfileDTO createProfile(ProfileDTO profileDTO) {
+		
+		//Encrypter Password
+		profileDTO.setPassword(encoder.encode(profileDTO.getPassword()));
+		
 		ProfileEntity profileEntity = mapToProfileEntity(profileDTO);
 		profileEntity.setProfileId(UUID.randomUUID().toString());
 		profileEntity = profileRepository.save(profileEntity);

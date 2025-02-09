@@ -3,6 +3,8 @@ package com.expense.controller;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,10 +55,11 @@ public class AuthController {
 
     
       @PostMapping("/login")    
-      public AuthResponse authenticateProfile(@RequestBody AuthRequest authRequest)
+      public AuthResponse authenticateProfile(@RequestBody AuthRequest authRequest) throws Exception
       {
     	  log.info("API /login is called {} "+ authRequest);
-    	  authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(),authRequest.getPassword()));
+//    	  authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(),authRequest.getPassword()));
+    	  authenticate(authRequest);
     	  final UserDetails userDetails=customUserDetailsService.loadUserByUsername(authRequest.getEmail());
     	  
     	  String jwtToken=jwtTokenUtil.generateToken(userDetails);
@@ -64,7 +67,22 @@ public class AuthController {
       }
 
     
-    /**
+      
+    private void authenticate(AuthRequest authRequest) throws Exception
+    {
+        try {		
+      	  authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(),authRequest.getPassword()));
+
+        }catch(DisabledException ex)
+        {
+        	throw new Exception("Profile disabled...");
+        }catch(BadCredentialsException ex) {
+        	throw new Exception("Bad Credentials..");
+        }
+	}
+
+
+	/**
 	 * Mapper method to map values from profileDTO to profileResponse
 	 * @param profileDTO
 	 * @return profileResponse

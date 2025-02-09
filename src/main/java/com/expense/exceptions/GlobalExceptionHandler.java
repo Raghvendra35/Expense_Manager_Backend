@@ -63,7 +63,32 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler
 	}
 	
 	
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	@ExceptionHandler(Exception.class)
+	public ErrorObject handleGeneralExcetion(Exception ex,WebRequest request)//WebRequest to provide the path
+	{
+		log.error("Throwing Exception from global Exception handler {}", ex.getMessage());
+		return ErrorObject.builder()
+		           .errorCode("UNEXPECTED_ERROR")
+		           .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
+		           .message(ex.getMessage())
+		           .timestamp(new Date())
+		           .build();
+	}
 	
+	//This method will run when emailId already exists in db and u are creating new registration with exists mail then it give error CONFLICT
+	@ResponseStatus(HttpStatus.CONFLICT)
+	@ExceptionHandler(ItemExistsException.class)
+	public ErrorObject handleItemExistsException(ItemExistsException ex, WebRequest request)
+	{
+		log.error("Throwing the ItemExistsException from GlobalExceptionHandler {}", ex.getMessage());
+		return ErrorObject.builder()
+				          .errorCode("DATA_EXISTS")
+				          .statusCode(HttpStatus.CONFLICT.value())
+				          .message(ex.getMessage())
+				          .timestamp(new Date())
+				          .build();
+	}
 	
 	
 }

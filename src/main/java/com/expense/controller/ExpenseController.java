@@ -105,7 +105,7 @@ public class ExpenseController
 		
 	
 	@PutMapping("/expense/{expenseId}")
-	public ExpenseResponse updateExpenseDetails(@RequestBody ExpenseRequest updaterequest,@PathVariable String expenseId)
+	public ExpenseResponse updateExpenseDetails(@Valid @RequestBody ExpenseRequest updaterequest,@PathVariable String expenseId)
 	{
 		log.info("API PUT /expense/{} request body {}", expenseId, updaterequest);
 		ExpenseDTO updatedExpenseDTO=mapToExpenseDTO(updaterequest);

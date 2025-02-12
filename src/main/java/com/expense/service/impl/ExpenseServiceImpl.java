@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.expense.dto.ExpenseDTO;
 import com.expense.entity.ExpenseEntity;
+import com.expense.entity.ProfileEntity;
 import com.expense.exceptions.ResourceNotFoundException;
 import com.expense.repository.ExpenseRepository;
 import com.expense.service.ExpenseService;
@@ -28,6 +29,7 @@ public class ExpenseServiceImpl implements ExpenseService
 
 	private final ExpenseRepository expenseRepository;
 	private final ModelMapper modelMapper;
+	private final AuthService authService;
 	
 	/**
 	 *It will fetch the expense from database
@@ -37,7 +39,8 @@ public class ExpenseServiceImpl implements ExpenseService
 	public List<ExpenseDTO> getAllExpense() 
 	{
 		//Call the Repository method
-		List<ExpenseEntity> list=expenseRepository.findAll();
+		Long loggedProfileId=authService.getLoggedInProfile().getId();
+		List<ExpenseEntity> list=expenseRepository.findByOwnerId(loggedProfileId);
 		log.info("Printing the data from repository {} ", list);
 
 		//convert the Entity object to DTO object
@@ -97,8 +100,12 @@ public class ExpenseServiceImpl implements ExpenseService
 	@Override
 	public ExpenseDTO saveExpenseDetails(ExpenseDTO expenseDTO) 
 	{
+		ProfileEntity profileEntity=authService.getLoggedInProfile();
+		
+		
 		ExpenseEntity newExpenseEntity=mapToExpenseEntity(expenseDTO);
 		newExpenseEntity.setExpenseId(UUID.randomUUID().toString());
+		newExpenseEntity.setOwner(profileEntity);		
 		newExpenseEntity= expenseRepository.save(newExpenseEntity);
 		log.info("Printing the new expense entity details {}"+ newExpenseEntity);
 		return mapToExpenseDTO(newExpenseEntity);
@@ -126,7 +133,8 @@ public class ExpenseServiceImpl implements ExpenseService
 	
 	private ExpenseEntity getExpenseEntity(String expenseId) {
 
-		return expenseRepository.findByExpenseId(expenseId).orElseThrow(() -> new ResourceNotFoundException("Expense not found for the expense id "+ expenseId));
+		long id= authService.getLoggedInProfile().getId();
+		return expenseRepository.findByOwnerIdAndExpenseId(id,expenseId).orElseThrow(() -> new ResourceNotFoundException("Expense not found for the expense id "+ expenseId));
 	}
 
 	/**
